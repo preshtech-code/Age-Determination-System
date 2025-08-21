@@ -1,7 +1,5 @@
 streamlit
-opencv-python-headless
 deepface
-Pillow
-gdown
-numpy
-
+opencv-python
+pillow
+tensorflow
