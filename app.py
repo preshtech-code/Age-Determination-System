@@ -2,12 +2,24 @@ import streamlit as st
 import cv2
 import numpy as np
 from PIL import Image
+import gdown
+import os
+
+# Google Drive file link
+file_id = "1R8GCtxzP2KaDxGp6pa885-piHcIXRslt"
+url = f"https://drive.google.com/uc?id={file_id}"
+output = "age_net.caffemodel"
+
+# Download the model if not already present
+if not os.path.exists(output):
+    with st.spinner("Downloading Age Model..."):
+        gdown.download(url, output, quiet=False)
 
 # Load models
 faceProto = "opencv_face_detector.pbtxt"
 faceModel = "opencv_face_detector_uint8.pb"
 ageProto = "age_deploy.prototxt"
-ageModel = "age_net.caffemodel"
+ageModel = output  # downloaded file
 
 # Load networks
 faceNet = cv2.dnn.readNet(faceModel, faceProto)
@@ -17,6 +29,7 @@ ageNet = cv2.dnn.readNet(ageModel, ageProto)
 AGE_GROUPS = ['(0-2)', '(4-6)', '(8-12)', '(15-20)',
               '(21-32)', '(33-43)', '(44-53)', '(60-100)']
 MODEL_MEAN_VALUES = (78.4263377603, 87.7689143744, 114.895847746)
+
 
 def detect_faces(frame):
     blob = cv2.dnn.blobFromImage(frame, 1.0, (300, 300),
@@ -34,12 +47,14 @@ def detect_faces(frame):
             faces.append((x1, y1, x2, y2))
     return faces
 
+
 def predict_age(face_img):
     blob = cv2.dnn.blobFromImage(face_img, 1.0, (227, 227), MODEL_MEAN_VALUES, swapRB=False)
     ageNet.setInput(blob)
     agePreds = ageNet.forward()
     i = agePreds[0].argmax()
     return AGE_GROUPS[i], agePreds[0][i]
+
 
 # Streamlit UI
 st.title("🧑 Age Determination System")
@@ -60,8 +75,8 @@ if mode == "Upload Image":
                 continue
             label, confidence = predict_age(face_img)
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.putText(frame, f"{label}, {confidence*100:.1f}%", 
-                        (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 
+            cv2.putText(frame, f"{label}, {confidence*100:.1f}%",
+                        (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX,
                         0.8, (0, 255, 0), 2, cv2.LINE_AA)
 
         st.image(frame, channels="RGB")
@@ -87,7 +102,7 @@ elif mode == "Use Webcam":
             label, confidence = predict_age(face_img)
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
             cv2.putText(frame, f"{label}", (x1, y1-10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, 
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.8,
                         (0, 255, 0), 2, cv2.LINE_AA)
 
         FRAME_WINDOW.image(frame)
