@@ -1,6 +1,5 @@
 streamlit
 opencv-python
-tensorflow
-numpy
 pillow
-
+numpy
+gdown
