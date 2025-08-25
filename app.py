@@ -5,6 +5,57 @@ from PIL import Image
 import gdown
 import os
 
+# Inject custom futuristic CSS
+st.markdown("""
+    <style>
+    body {
+        background: radial-gradient(circle at top left, #0f0f0f, #1a1a2e, #0f3460);
+        color: #e0e0e0;
+        font-family: 'Orbitron', sans-serif;
+    }
+    .stApp {
+        background: transparent;
+    }
+    h1 {
+        text-align: center;
+        font-size: 3em;
+        font-weight: bold;
+        color: #00f5d4;
+        text-shadow: 0px 0px 10px #00f5d4, 0px 0px 20px #00f5d4;
+    }
+    .block-container {
+        padding: 2rem 3rem;
+        border-radius: 20px;
+        background: rgba(20, 20, 40, 0.7);
+        box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+    }
+    .stRadio > label {
+        font-size: 1.2rem;
+        color: #9ef01a;
+    }
+    .stButton>button {
+        background: linear-gradient(135deg, #00f5d4, #00bbf9, #9b5de5);
+        color: white;
+        border-radius: 15px;
+        padding: 0.7rem 1.5rem;
+        font-size: 1rem;
+        font-weight: bold;
+        border: none;
+        box-shadow: 0px 0px 15px #00f5d4;
+        transition: 0.3s ease-in-out;
+    }
+    .stButton>button:hover {
+        transform: scale(1.08);
+        box-shadow: 0px 0px 25px #9b5de5;
+    }
+    .stFileUploader label {
+        font-weight: bold;
+        color: #f72585;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+
 # Google Drive file link
 file_id = "1R8GCtxzP2KaDxGp6pa885-piHcIXRslt"
 url = f"https://drive.google.com/uc?id={file_id}"
@@ -12,7 +63,7 @@ output = "age_net.caffemodel"
 
 # Download the model if not already present
 if not os.path.exists(output):
-    with st.spinner("Downloading Age Model..."):
+    with st.spinner("🔽 Downloading AI Age Model..."):
         gdown.download(url, output, quiet=False)
 
 # Load models
@@ -56,14 +107,14 @@ def predict_age(face_img):
     return AGE_GROUPS[i], agePreds[0][i]
 
 
-# Streamlit UI
-st.title("🧑 Age Determination System")
-st.write("Upload an image or use your webcam to detect age.")
+# Streamlit Futuristic UI
+st.title("👾 Futuristic Age Determination AI")
+st.markdown("<h4 style='text-align: center; color:#9ef01a;'>Upload an image or activate your webcam to detect age with Artificial Intelligence ⚡</h4>", unsafe_allow_html=True)
 
 mode = st.radio("Choose mode:", ["Upload Image", "Use Webcam"])
 
 if mode == "Upload Image":
-    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+    uploaded_file = st.file_uploader("📤 Upload an image...", type=["jpg", "jpeg", "png"])
     if uploaded_file is not None:
         image = Image.open(uploaded_file).convert("RGB")
         frame = np.array(image)
@@ -74,16 +125,16 @@ if mode == "Upload Image":
             if face_img.size == 0:
                 continue
             label, confidence = predict_age(face_img)
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 180), 2)
             cv2.putText(frame, f"{label}, {confidence*100:.1f}%",
-                        (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX,
-                        0.8, (0, 255, 0), 2, cv2.LINE_AA)
+                        (x1, y1-10), cv2.FONT_HERSHEY_DUPLEX,
+                        0.8, (0, 255, 180), 2, cv2.LINE_AA)
 
-        st.image(frame, channels="RGB")
+        st.image(frame, channels="RGB", caption="🧑 AI Age Detection Result")
 
 elif mode == "Use Webcam":
-    st.write("Click below to start webcam feed.")
-    run = st.checkbox("Start Webcam")
+    st.write("🎥 Click below to start webcam feed.")
+    run = st.checkbox("🚀 Activate Futuristic Webcam")
 
     cap = cv2.VideoCapture(0)
     FRAME_WINDOW = st.image([])
@@ -100,11 +151,10 @@ elif mode == "Use Webcam":
             if face_img.size == 0:
                 continue
             label, confidence = predict_age(face_img)
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 180), 2)
             cv2.putText(frame, f"{label}", (x1, y1-10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.8,
-                        (0, 255, 0), 2, cv2.LINE_AA)
+                        cv2.FONT_HERSHEY_DUPLEX, 0.8,
+                        (0, 255, 180), 2, cv2.LINE_AA)
 
         FRAME_WINDOW.image(frame)
     cap.release()
-
