@@ -107,3 +107,4 @@ elif mode == "Use Webcam":
 
         FRAME_WINDOW.image(frame)
     cap.release()
+
